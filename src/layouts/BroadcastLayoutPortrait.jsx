@@ -1,6 +1,6 @@
 /**
  * Portrait Broadcast layout - 6-zone CSS Grid at 1080x1920 (9:16)
- * Includes: Header, Main (trending), Secondary (2 cards), Lower Third + QR, Ticker
+ * Includes: Header, Main (trending + also trending), Secondary (2 cards), Lower Third + QR, Ticker
  * Auto-scales to fit viewport for preview while maintaining native dimensions for OBS
  */
 
@@ -39,7 +39,12 @@ export function BroadcastLayoutPortrait({
     return () => window.removeEventListener('resize', calculateScale);
   }, []);
 
-  // Layout: header, main (trending), secondary (2 cards), lower third + QR, ticker
+  // Portrait layout grid:
+  // - Header: 100px (compact header with logo, countdown)
+  // - Main: 870px (featured market + also trending list)
+  // - Secondary: 380px (2 event cards side by side)
+  // - Lower Third + QR: 350px (editorial card + QR code)
+  // - Ticker: 60px (scrolling markets)
   const gridAreas = `
     "header header"
     "main main"
@@ -56,8 +61,8 @@ export function BroadcastLayoutPortrait({
       style={{
         display: 'grid',
         gridTemplateAreas: gridAreas,
-        gridTemplateColumns: '1fr 220px',
-        gridTemplateRows: '160px 890px 400px 300px 60px',
+        gridTemplateColumns: '1fr 280px',
+        gridTemplateRows: '100px 870px 380px 350px 60px',
         gap: '12px',
         padding: '16px',
         width: `${NATIVE_WIDTH}px`,

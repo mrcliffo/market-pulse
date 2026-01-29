@@ -1,15 +1,16 @@
 /**
- * Secondary Markets - 3-column grid of event cards
- * Each card shows top 4 outcomes for an event
+ * Secondary Markets - Grid of event cards
+ * Landscape: 3 columns, 4 outcomes per card
+ * Portrait: 2 columns, 5 outcomes per card
  */
 
 import { useTheme } from '../../themes/index.jsx';
 import { formatPrice, formatVolume } from '../../utils/formatters.js';
 
-function SecondaryCard({ event, colors, fonts }) {
+function SecondaryCard({ event, colors, fonts, maxOutcomes = 4 }) {
   if (!event || !event.outcomes) return null;
 
-  const outcomes = event.outcomes.slice(0, 4);
+  const outcomes = event.outcomes.slice(0, maxOutcomes);
 
   return (
     <div style={{
@@ -41,7 +42,7 @@ function SecondaryCard({ event, colors, fonts }) {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: '6px',
+        gap: '4px',
       }}>
         {outcomes.map((outcome, idx) => (
           <div
@@ -59,6 +60,11 @@ function SecondaryCard({ event, colors, fonts }) {
               fontSize: '14px',
               color: idx === 0 ? colors.text : colors.textMuted,
               fontWeight: idx === 0 ? 500 : 400,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: 1,
+              marginRight: '8px',
             }}>
               {idx + 1}. {outcome.name}
             </span>
@@ -67,6 +73,7 @@ function SecondaryCard({ event, colors, fonts }) {
               fontSize: '16px',
               fontWeight: 600,
               color: idx === 0 ? colors.secondary : colors.text,
+              flexShrink: 0,
             }}>
               {formatPrice(outcome.price)}
             </span>
@@ -89,20 +96,25 @@ function SecondaryCard({ event, colors, fonts }) {
   );
 }
 
-export function SecondaryMarkets({ events = [], maxCards = 3 }) {
+export function SecondaryMarkets({ events = [], maxCards = 3, portrait = false }) {
   const { colors, fonts } = useTheme();
 
-  // Ensure we have exactly 3 slots (can be empty)
-  const displayEvents = events.slice(0, maxCards);
+  // Portrait: 2 columns, 5 outcomes. Landscape: 3 columns, 4 outcomes
+  const columns = portrait ? 2 : maxCards;
+  const outcomesPerCard = portrait ? 5 : 4;
+
+  // Ensure we have exactly the right number of slots
+  const displayEvents = events.slice(0, columns);
 
   if (displayEvents.length === 0) {
     return (
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '16px',
+        gridTemplateColumns: `repeat(${columns}, 1fr)`,
+        gap: portrait ? '12px' : '16px',
+        height: '100%',
       }}>
-        {[0, 1, 2].map(i => (
+        {Array(columns).fill(null).map((_, i) => (
           <div
             key={i}
             style={{
@@ -128,8 +140,9 @@ export function SecondaryMarkets({ events = [], maxCards = 3 }) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: '16px',
+      gridTemplateColumns: `repeat(${columns}, 1fr)`,
+      gap: portrait ? '12px' : '16px',
+      height: '100%',
     }}>
       {displayEvents.map((event, idx) => (
         <SecondaryCard
@@ -137,10 +150,11 @@ export function SecondaryMarkets({ events = [], maxCards = 3 }) {
           event={event}
           colors={colors}
           fonts={fonts}
+          maxOutcomes={outcomesPerCard}
         />
       ))}
       {/* Fill remaining slots with empty placeholders */}
-      {Array(maxCards - displayEvents.length).fill(null).map((_, idx) => (
+      {Array(columns - displayEvents.length).fill(null).map((_, idx) => (
         <div
           key={`empty-${idx}`}
           style={{

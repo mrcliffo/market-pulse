@@ -11,6 +11,7 @@ export function Main({
   content,
   data,
   state = 'on',
+  portrait = false,
 }) {
   const { colors, fonts } = useTheme();
 
@@ -55,13 +56,16 @@ export function Main({
             trending={data?.trending}
             priceHistoryCache={data?.priceHistoryCache}
             maxOutcomes={6}
+            portrait={portrait}
           />
         </div>
 
-        {/* Secondary markets - 3 columns at bottom */}
-        <div style={{ flexShrink: 0 }}>
-          <SecondaryMarkets events={data?.secondary || []} maxCards={3} />
-        </div>
+        {/* Secondary markets - 3 columns at bottom (landscape only, portrait has separate zone) */}
+        {!portrait && (
+          <div style={{ flexShrink: 0 }}>
+            <SecondaryMarkets events={data?.secondary || []} maxCards={3} portrait={false} />
+          </div>
+        )}
       </div>
     );
   }

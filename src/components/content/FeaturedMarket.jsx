@@ -1,7 +1,6 @@
 /**
  * Featured Market - Hero display for main zone
- * Shows a single event with large typography and prominent odds
- * Or shows top trending markets from playlist when no event selected
+ * Shows top trending market with sparkline and "Also Trending" list
  */
 
 import { useState, useEffect, useMemo } from 'react';
@@ -9,7 +8,7 @@ import { useTheme } from '../../themes/index.jsx';
 import { formatPrice, formatVolume } from '../../utils/formatters.js';
 
 /**
- * Bar chart sparkline for 7-day price trend (matches POC design)
+ * Bar chart sparkline for 7-day price trend
  */
 function PriceTrendBars({ data, colors, height = '100%' }) {
   const bars = 40;
@@ -65,7 +64,76 @@ function PriceTrendBars({ data, colors, height = '100%' }) {
   );
 }
 
-export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOutcomes = 6, rotationInterval = 20000 }) {
+/**
+ * Also Trending list item
+ */
+function TrendingItem({ rank, market, colors, fonts, portrait = false }) {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      padding: portrait ? '12px 16px' : '10px 16px',
+      borderBottom: `1px solid ${colors.border}40`,
+    }}>
+      {/* Rank */}
+      <div style={{
+        fontFamily: fonts.heading,
+        fontSize: portrait ? '16px' : '14px',
+        fontWeight: 700,
+        color: colors.accent,
+        width: portrait ? '40px' : '32px',
+        flexShrink: 0,
+      }}>
+        #{rank}
+      </div>
+
+      {/* Name and event */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: fonts.heading,
+          fontSize: portrait ? '16px' : '14px',
+          fontWeight: 600,
+          color: colors.text,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {market.name}
+        </div>
+        <div style={{
+          fontFamily: fonts.body,
+          fontSize: portrait ? '12px' : '11px',
+          color: colors.textMuted,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {market.eventTitle}
+        </div>
+      </div>
+
+      {/* Price */}
+      <div style={{
+        fontFamily: fonts.heading,
+        fontSize: portrait ? '18px' : '16px',
+        fontWeight: 700,
+        color: colors.secondary,
+        marginLeft: '12px',
+      }}>
+        {formatPrice(market.price)}
+      </div>
+    </div>
+  );
+}
+
+export function FeaturedMarket({
+  event,
+  trending,
+  priceHistoryCache = {},
+  maxOutcomes = 6,
+  rotationInterval = 20000,
+  portrait = false,
+}) {
   const { colors, fonts } = useTheme();
   const [rotationIndex, setRotationIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -79,7 +147,7 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
       setTimeout(() => {
         setRotationIndex(prev => (prev + 1) % trending.length);
         setIsAnimating(false);
-      }, 300); // Match fade-out duration
+      }, 300);
     }, rotationInterval);
 
     return () => clearInterval(timer);
@@ -90,16 +158,18 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
     setRotationIndex(0);
   }, [trending?.length]);
 
-  // Get current leader based on rotation (for trending mode)
+  // Get current leader based on rotation
   const currentLeader = trending?.[rotationIndex] || trending?.[0];
 
-  // Use pre-fetched price history from cache (no per-rotation fetching)
+  // Use pre-fetched price history from cache
   const leaderTokenId = currentLeader?.tokenId || event?.outcomes?.[0]?.tokenId;
   const priceHistory = leaderTokenId ? priceHistoryCache[leaderTokenId] : null;
 
   // Trending mode: show top markets from playlist
   if (!event && trending?.length > 0) {
     const leader = currentLeader;
+    // For portrait, show items #2-#8 (7 items). For landscape, show items #2-#7 (6 items)
+    const alsoTrending = trending.slice(1, portrait ? 9 : 7);
 
     return (
       <div style={{
@@ -108,92 +178,92 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
         height: '100%',
         background: colors.surface,
         borderRadius: '12px',
-        padding: '24px',
         overflow: 'hidden',
         border: `1px solid ${colors.border}`,
       }}>
         {/* Header */}
         <div style={{
-          fontFamily: fonts.heading,
-          fontSize: '12px',
-          fontWeight: 600,
-          color: colors.accent,
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          marginBottom: '16px',
+          padding: portrait ? '20px 24px 16px' : '20px 24px 12px',
+          textAlign: 'center',
         }}>
-          TOP TRENDING MARKETS
+          <div style={{
+            fontFamily: fonts.heading,
+            fontSize: portrait ? '14px' : '12px',
+            fontWeight: 600,
+            color: colors.accent,
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+          }}>
+            TOP TRENDING MARKETS
+          </div>
         </div>
 
-        {/* Leader highlight with animation */}
+        {/* Featured leader */}
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          padding: '16px 20px',
-          background: `linear-gradient(90deg, ${colors.accent}15 0%, transparent 100%)`,
-          borderRadius: '8px',
-          borderLeft: `4px solid ${colors.accent}`,
-          marginBottom: '16px',
+          padding: portrait ? '16px 24px' : '12px 24px',
           opacity: isAnimating ? 0 : 1,
           transform: isAnimating ? 'translateY(-10px)' : 'translateY(0)',
           transition: 'opacity 0.3s ease, transform 0.3s ease',
         }}>
           <div style={{
-            fontFamily: fonts.heading,
-            fontSize: '12px',
-            fontWeight: 600,
-            color: colors.accent,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '16px',
           }}>
-            #{rotationIndex + 1}
-          </div>
-          <div style={{ flex: 1 }}>
+            {/* Rank */}
             <div style={{
               fontFamily: fonts.heading,
-              fontSize: '22px',
+              fontSize: portrait ? '48px' : '40px',
               fontWeight: 700,
-              color: colors.text,
-              marginBottom: '2px',
+              color: colors.accent,
+              lineHeight: 1,
             }}>
-              {leader.name}
+              #{rotationIndex + 1}
             </div>
+
+            {/* Name and event */}
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontFamily: fonts.heading,
+                fontSize: portrait ? '28px' : '24px',
+                fontWeight: 700,
+                color: colors.text,
+                marginBottom: '4px',
+              }}>
+                {leader.name}
+              </div>
+              <div style={{
+                fontFamily: fonts.body,
+                fontSize: portrait ? '14px' : '12px',
+                color: colors.textMuted,
+              }}>
+                {leader.eventTitle}
+              </div>
+            </div>
+
+            {/* Price */}
             <div style={{
-              fontFamily: fonts.body,
-              fontSize: '11px',
-              color: colors.textMuted,
+              fontFamily: fonts.heading,
+              fontSize: portrait ? '42px' : '36px',
+              fontWeight: 700,
+              color: colors.secondary,
             }}>
-              {leader.eventTitle}
+              {formatPrice(leader.price)}
             </div>
-          </div>
-          <div style={{
-            fontFamily: fonts.heading,
-            fontSize: '32px',
-            fontWeight: 700,
-            color: colors.accent,
-          }}>
-            {formatPrice(leader.price)}
           </div>
         </div>
 
-        {/* 7-Day Price Trend with animation */}
+        {/* 7-Day Price Trend */}
         <div style={{
-          flex: 1,
-          padding: '16px 20px',
-          backgroundColor: `${colors.surface}60`,
-          borderRadius: '8px',
-          border: `1px solid ${colors.border}`,
+          padding: portrait ? '16px 24px' : '12px 24px',
           opacity: isAnimating ? 0 : 1,
           transition: 'opacity 0.3s ease',
-          display: 'flex',
-          flexDirection: 'column',
         }}>
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '16px',
+            marginBottom: '12px',
           }}>
             <div style={{
               fontFamily: fonts.body,
@@ -217,11 +287,11 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
                 }}>
-                  24h Volume
+                  24H Vol
                 </span>
                 <span style={{
                   fontFamily: fonts.heading,
-                  fontSize: '16px',
+                  fontSize: portrait ? '18px' : '16px',
                   fontWeight: 700,
                   color: colors.secondary,
                 }}>
@@ -230,14 +300,51 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
               </div>
             )}
           </div>
-          <div style={{ flex: 1, minHeight: '80px' }}>
+          <div style={{ height: portrait ? '100px' : '120px' }}>
             <PriceTrendBars data={priceHistory} colors={colors} />
           </div>
         </div>
+
+        {/* Also Trending list - shown in both modes */}
+        {alsoTrending.length > 0 && (
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '12px 24px 8px',
+              fontFamily: fonts.body,
+              fontSize: '11px',
+              color: colors.textMuted,
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+            }}>
+              Also Trending
+            </div>
+            <div style={{
+              flex: 1,
+              overflow: 'auto',
+            }}>
+              {alsoTrending.map((market, idx) => (
+                <TrendingItem
+                  key={market.tokenId || idx}
+                  rank={idx + 2}
+                  market={market}
+                  colors={colors}
+                  fonts={fonts}
+                  portrait={portrait}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
+  // Single event mode (when an event is explicitly assigned)
   if (!event || !event.outcomes) {
     return (
       <div style={{
@@ -289,7 +396,7 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
           </div>
           <h2 style={{
             fontFamily: fonts.heading,
-            fontSize: '28px',
+            fontSize: portrait ? '24px' : '28px',
             fontWeight: 700,
             color: colors.text,
             margin: 0,
@@ -360,29 +467,6 @@ export function FeaturedMarket({ event, trending, priceHistoryCache = {}, maxOut
           }}>
             {formatPrice(leader.price)}
           </div>
-        </div>
-      )}
-
-      {/* 7-Day Price Trend */}
-      {priceHistory && priceHistory.length > 0 && (
-        <div style={{
-          marginBottom: '16px',
-          padding: '12px 16px',
-          backgroundColor: `${colors.surface}60`,
-          borderRadius: '8px',
-          border: `1px solid ${colors.border}`,
-        }}>
-          <div style={{
-            fontFamily: fonts.body,
-            fontSize: '11px',
-            color: colors.textMuted,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            marginBottom: '10px',
-          }}>
-            7-Day Price Trend
-          </div>
-          <PriceTrendBars data={priceHistory} colors={colors} />
         </div>
       )}
 

@@ -137,6 +137,141 @@ export const themes = {
       mono: "'JetBrains Mono', monospace",
     },
   },
+
+  'midnight-terminal': {
+    id: 'midnight-terminal',
+    name: 'Midnight Terminal',
+    colors: {
+      primary: '#00FF88',       // Terminal green
+      secondary: '#00D4AA',     // Teal
+      tertiary: '#00B4D8',      // Cyan
+
+      surface: 'rgba(0, 10, 8, 0.95)',
+      surfaceAlt: 'rgba(0, 20, 16, 0.95)',
+
+      border: 'rgba(0, 255, 136, 0.3)',
+
+      text: '#E0FFF0',
+      textMuted: 'rgba(224, 255, 240, 0.6)',
+
+      accent: '#00FF88',
+      positive: '#00FF88',
+      negative: '#FF4757',
+    },
+    fonts: {
+      heading: "'Oswald', sans-serif",
+      body: "'Roboto', sans-serif",
+      mono: "'JetBrains Mono', monospace",
+    },
+  },
+
+  'golden-hour': {
+    id: 'golden-hour',
+    name: 'Golden Hour',
+    colors: {
+      primary: '#F59E0B',       // Amber
+      secondary: '#F97316',     // Orange
+      tertiary: '#EAB308',      // Yellow
+
+      surface: 'rgba(30, 20, 10, 0.95)',
+      surfaceAlt: 'rgba(45, 30, 15, 0.95)',
+
+      border: 'rgba(245, 158, 11, 0.4)',
+
+      text: '#FFF8E7',
+      textMuted: 'rgba(255, 248, 231, 0.7)',
+
+      accent: '#F59E0B',
+      positive: '#84CC16',
+      negative: '#EF4444',
+    },
+    fonts: {
+      heading: "'Oswald', sans-serif",
+      body: "'Roboto', sans-serif",
+      mono: "'JetBrains Mono', monospace",
+    },
+  },
+
+  'arctic-blue': {
+    id: 'arctic-blue',
+    name: 'Arctic Blue',
+    colors: {
+      primary: '#38BDF8',       // Sky blue
+      secondary: '#0EA5E9',     // Deeper blue
+      tertiary: '#7DD3FC',      // Light blue
+
+      surface: 'rgba(8, 20, 35, 0.95)',
+      surfaceAlt: 'rgba(12, 30, 50, 0.95)',
+
+      border: 'rgba(56, 189, 248, 0.3)',
+
+      text: '#F0F9FF',
+      textMuted: 'rgba(240, 249, 255, 0.6)',
+
+      accent: '#38BDF8',
+      positive: '#34D399',
+      negative: '#F87171',
+    },
+    fonts: {
+      heading: "'Oswald', sans-serif",
+      body: "'Roboto', sans-serif",
+      mono: "'JetBrains Mono', monospace",
+    },
+  },
+
+  'neon-nights': {
+    id: 'neon-nights',
+    name: 'Neon Nights',
+    colors: {
+      primary: '#E879F9',       // Fuchsia
+      secondary: '#A855F7',     // Purple
+      tertiary: '#F472B6',      // Pink
+
+      surface: 'rgba(20, 5, 25, 0.95)',
+      surfaceAlt: 'rgba(35, 10, 45, 0.95)',
+
+      border: 'rgba(232, 121, 249, 0.4)',
+
+      text: '#FDF4FF',
+      textMuted: 'rgba(253, 244, 255, 0.6)',
+
+      accent: '#E879F9',
+      positive: '#4ADE80',
+      negative: '#FB7185',
+    },
+    fonts: {
+      heading: "'Oswald', sans-serif",
+      body: "'Roboto', sans-serif",
+      mono: "'JetBrains Mono', monospace",
+    },
+  },
+
+  'carbon-fiber': {
+    id: 'carbon-fiber',
+    name: 'Carbon Fiber',
+    colors: {
+      primary: '#A3A3A3',       // Neutral gray
+      secondary: '#737373',     // Darker gray
+      tertiary: '#D4D4D4',      // Light gray
+
+      surface: 'rgba(23, 23, 23, 0.95)',
+      surfaceAlt: 'rgba(38, 38, 38, 0.95)',
+
+      border: 'rgba(163, 163, 163, 0.3)',
+
+      text: '#FAFAFA',
+      textMuted: 'rgba(250, 250, 250, 0.6)',
+
+      accent: '#E5E5E5',
+      positive: '#22C55E',
+      negative: '#EF4444',
+    },
+    fonts: {
+      heading: "'Oswald', sans-serif",
+      body: "'Roboto', sans-serif",
+      mono: "'JetBrains Mono', monospace",
+    },
+  },
 };
 
 export const themeList = Object.values(themes);
