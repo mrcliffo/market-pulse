@@ -168,9 +168,10 @@ export function FeaturedMarket({
   // Trending mode: show top markets from playlist
   if (!event && trending?.length > 0) {
     const leader = currentLeader;
-    // Show OTHER items (not the current featured one) in "Also Trending"
-    // Filter out the current leader and take 7 items for portrait, 6 for landscape
+    // Show ALL OTHER items (not the current featured one) in "Also Trending"
+    // Keep original rankings but exclude the featured one
     const alsoTrending = trending
+      .map((market, idx) => ({ ...market, originalRank: idx + 1 }))
       .filter((_, idx) => idx !== rotationIndex)
       .slice(0, portrait ? 7 : 6);
 
@@ -333,7 +334,7 @@ export function FeaturedMarket({
               {alsoTrending.map((market, idx) => (
                 <TrendingItem
                   key={market.tokenId || idx}
-                  rank={idx + 2}
+                  rank={market.originalRank || (idx + 1)}
                   market={market}
                   colors={colors}
                   fonts={fonts}

@@ -201,7 +201,7 @@ export function EditorialCard({ market, portrait = false }) {
     return '';
   };
 
-  // Portrait layout - single column, more vertical
+  // Portrait layout - same as landscape but more compact/vertical
   if (portrait) {
     return (
       <div style={{
@@ -236,7 +236,7 @@ export function EditorialCard({ market, portrait = false }) {
           fontWeight: 600,
           letterSpacing: '2px',
           color: labelColor,
-          marginBottom: '8px',
+          marginBottom: '10px',
           textTransform: 'uppercase',
         }}>
           {labelText}
@@ -258,44 +258,49 @@ export function EditorialCard({ market, portrait = false }) {
           {getMarketTitle()}
         </div>
 
-        {/* Stats */}
+        {/* Stats row - same format as landscape */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          marginBottom: '12px',
+          marginBottom: '8px',
+          flexWrap: 'wrap',
         }}>
+          {/* Primary stat */}
           <div style={{
             fontFamily: fonts.heading,
             fontSize: '28px',
             fontWeight: 600,
-            color: colors.positive,
+            color: isNegative ? colors.negative : isPositive ? colors.positive : colors.text,
+            whiteSpace: 'nowrap',
           }}>
-            YES {formatPrice(price)}
+            {getPrimaryStat()}
           </div>
-          <div style={{
-            fontFamily: fonts.body,
-            fontSize: '18px',
-            color: colors.textMuted,
-          }}>
-            NO {formatPrice(1 - price)}
-          </div>
+
+          {/* Secondary stat (change percentage) */}
+          {getSecondaryStat() && (
+            <div style={{
+              fontFamily: fonts.body,
+              fontSize: '18px',
+              fontWeight: 600,
+              color: isNegative ? colors.negative : isPositive ? colors.positive : colors.textMuted,
+              whiteSpace: 'nowrap',
+            }}>
+              {getSecondaryStat()}
+            </div>
+          )}
         </div>
 
-        {/* Split bar for YES/NO */}
-        <div style={{
-          height: '12px',
-          backgroundColor: colors.negative,
-          borderRadius: '6px',
-          marginBottom: '16px',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${price * 100}%`,
-            background: colors.positive,
-            borderRadius: '6px 0 0 6px',
-          }} />
+        {/* Animated stat bar */}
+        <div style={{ marginBottom: '16px' }}>
+          <AnimatedStatBar
+            key={animationKey}
+            currentValue={price}
+            previousValue={shouldAnimateBar ? previousPrice : price}
+            variant={getStatVariant()}
+            showSplit={market.theme === 'debateFuel' || market.theme === 'mostEngaged'}
+            animate={shouldAnimateBar}
+          />
         </div>
 
         {/* Editorial copy */}
@@ -306,6 +311,10 @@ export function EditorialCard({ market, portrait = false }) {
           lineHeight: 1.4,
           fontStyle: 'italic',
           flex: 1,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
         }}>
           "{market.editorialCopy || 'The market is moving.'}"
         </div>
