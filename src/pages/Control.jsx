@@ -1358,99 +1358,110 @@ function ThemeManager({ currentTheme, onSelect, onThemesChanged }) {
 }
 
 function LivePreview() {
-  const [previewError, setPreviewError] = useState(false);
-  const containerRef = useRef(null);
-  const [scale, setScale] = useState(0.2);
-
-  // Calculate scale based on container width
-  useEffect(() => {
-    if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const newScale = containerWidth / 1920;
-      setScale(newScale);
-    }
-  }, []);
+  const [landscapeError, setLandscapeError] = useState(false);
+  const [portraitError, setPortraitError] = useState(false);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        backgroundColor: UI.bg,
-        borderRadius: '12px',
-        padding: '0',
-        border: `1px solid ${UI.border}`,
-        aspectRatio: '16/9',
-        overflow: 'hidden',
-        position: 'relative',
-        maxWidth: '400px',
-      }}
-    >
-      {previewError ? (
-        <div style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: UI.textMuted,
-          fontSize: '12px',
-          gap: '8px',
-        }}>
-          <span style={{ fontSize: '24px' }}>📺</span>
-          <span>Preview unavailable</span>
-          <a
-            href="/broadcast?debug=true"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: UI.accent,
-              fontSize: '11px',
-              textDecoration: 'none',
-            }}
-          >
-            Open in new window →
-          </a>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* Labels */}
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ flex: 1, fontSize: '10px', fontWeight: 600, color: UI.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          16:9 Landscape
         </div>
-      ) : (
-        <iframe
-          src="/broadcast?debug=true&preview=true"
-          title="Broadcast Preview"
-          style={{
-            width: '1920px',
-            height: '1080px',
-            border: 'none',
-            transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-            pointerEvents: 'none',
-          }}
-          onError={() => setPreviewError(true)}
-        />
-      )}
+        <div style={{ width: '80px', fontSize: '10px', fontWeight: 600, color: UI.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          9:16 Portrait
+        </div>
+      </div>
 
-      {/* Live badge */}
-      <div style={{
-        position: 'absolute',
-        top: '8px',
-        right: '8px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '5px',
-        padding: '3px 8px',
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        borderRadius: '4px',
-        backdropFilter: 'blur(4px)',
-      }}>
-        <div style={{
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          backgroundColor: UI.error,
-          animation: 'pulse 1.5s infinite',
-        }} />
-        <span style={{ color: '#fff', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Live
-        </span>
+      {/* Previews */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+        {/* Landscape Preview */}
+        <div
+          style={{
+            flex: 1,
+            backgroundColor: UI.bg,
+            borderRadius: '8px',
+            border: `1px solid ${UI.border}`,
+            aspectRatio: '16/9',
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          {landscapeError ? (
+            <div style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: UI.textMuted,
+              fontSize: '11px',
+              gap: '6px',
+            }}>
+              <span style={{ fontSize: '20px' }}>📺</span>
+              <span>Preview unavailable</span>
+            </div>
+          ) : (
+            <iframe
+              src="/broadcast?preview=true"
+              title="Landscape Preview"
+              style={{
+                width: '1920px',
+                height: '1080px',
+                border: 'none',
+                transform: 'scale(0.15)',
+                transformOrigin: 'top left',
+                pointerEvents: 'none',
+              }}
+              onError={() => setLandscapeError(true)}
+            />
+          )}
+        </div>
+
+        {/* Portrait Preview */}
+        <div
+          style={{
+            width: '80px',
+            backgroundColor: UI.bg,
+            borderRadius: '8px',
+            border: `1px solid ${UI.border}`,
+            aspectRatio: '9/16',
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          {portraitError ? (
+            <div style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: UI.textMuted,
+              fontSize: '9px',
+              gap: '4px',
+            }}>
+              <span style={{ fontSize: '16px' }}>📱</span>
+              <span>N/A</span>
+            </div>
+          ) : (
+            <iframe
+              src="/broadcast/portrait?preview=true"
+              title="Portrait Preview"
+              style={{
+                width: '1080px',
+                height: '1920px',
+                border: 'none',
+                transform: 'scale(0.074)',
+                transformOrigin: 'top left',
+                pointerEvents: 'none',
+              }}
+              onError={() => setPortraitError(true)}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
