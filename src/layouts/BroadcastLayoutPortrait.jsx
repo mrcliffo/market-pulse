@@ -6,8 +6,9 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from '../themes/index.jsx';
-import { Header, Main, LowerThird, BottomCorner, Ticker } from '../components/zones/index.js';
+import { Header, Main, LowerThird, Ticker } from '../components/zones/index.js';
 import { SecondaryMarkets } from '../components/content/SecondaryMarkets.jsx';
+import { BottomCornerPortrait } from '../components/zones/BottomCorner.jsx';
 
 const NATIVE_WIDTH = 1080;
 const NATIVE_HEIGHT = 1920;
@@ -39,30 +40,14 @@ export function BroadcastLayoutPortrait({
     return () => window.removeEventListener('resize', calculateScale);
   }, []);
 
-  // Portrait layout grid:
-  // - Header: 100px (compact header with logo, countdown)
-  // - Main: 870px (featured market + also trending list)
-  // - Secondary: 380px (2 event cards side by side)
-  // - Lower Third + QR: 350px (editorial card + QR code)
-  // - Ticker: 60px (scrolling markets)
-  const gridAreas = `
-    "header header"
-    "main main"
-    "secondary secondary"
-    "lowerthird bottomcorner"
-    "ticker ticker"
-  `;
-
   // Add debug background for testing (remove for production OBS use)
   const isDebug = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('debug') === 'true';
 
   return (
     <div
       style={{
-        display: 'grid',
-        gridTemplateAreas: gridAreas,
-        gridTemplateColumns: '1fr 280px',
-        gridTemplateRows: '100px 870px 380px 350px 60px',
+        display: 'flex',
+        flexDirection: 'column',
         gap: '12px',
         padding: '16px',
         width: `${NATIVE_WIDTH}px`,
@@ -76,24 +61,30 @@ export function BroadcastLayoutPortrait({
         transformOrigin: 'top left',
       }}
     >
-      <Header
-        siteName={config?.siteName}
-        logoUrl={config?.logoUrl}
-        countdown={config?.countdown}
-        state={zones?.header?.visible ? 'on' : 'off'}
-        portrait={true}
-      />
+      {/* Header - 100px */}
+      <div style={{ flexShrink: 0, height: '100px' }}>
+        <Header
+          siteName={config?.siteName}
+          logoUrl={config?.logoUrl}
+          countdown={config?.countdown}
+          state={zones?.header?.visible ? 'on' : 'off'}
+          portrait={true}
+        />
+      </div>
 
-      <Main
-        content={zones?.main?.content}
-        data={data?.main}
-        state={zones?.main?.visible ? 'on' : 'off'}
-        portrait={true}
-      />
+      {/* Main - flex to fill space, ~820px */}
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <Main
+          content={zones?.main?.content}
+          data={data?.main}
+          state={zones?.main?.visible ? 'on' : 'off'}
+          portrait={true}
+        />
+      </div>
 
-      {/* Secondary markets - 2 cards side by side (tied to main zone visibility) */}
+      {/* Secondary markets - 340px, 2 cards side by side */}
       {zones?.main?.visible !== false && (
-        <div style={{ gridArea: 'secondary', overflow: 'hidden' }}>
+        <div style={{ flexShrink: 0, height: '340px' }}>
           <SecondaryMarkets
             events={data?.secondary || []}
             maxCards={2}
@@ -102,23 +93,39 @@ export function BroadcastLayoutPortrait({
         </div>
       )}
 
-      <LowerThird
-        content={zones?.lowerThird?.content}
-        data={data?.lowerThird}
-        state={zones?.lowerThird?.visible ? 'on' : 'off'}
-        portrait={true}
-      />
+      {/* Lower Third + QR row - 320px */}
+      <div style={{
+        flexShrink: 0,
+        height: '320px',
+        display: 'flex',
+        gap: '12px',
+      }}>
+        {/* Lower Third - takes remaining space */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <LowerThird
+            content={zones?.lowerThird?.content}
+            data={data?.lowerThird}
+            state={zones?.lowerThird?.visible ? 'on' : 'off'}
+            portrait={true}
+          />
+        </div>
 
-      <BottomCorner
-        voteUrl={config?.voteUrl}
-        state={zones?.bottomCorner?.visible ? 'on' : 'off'}
-        portrait={true}
-      />
+        {/* QR Code - fixed width */}
+        <div style={{ flexShrink: 0, width: '240px' }}>
+          <BottomCornerPortrait
+            voteUrl={config?.voteUrl}
+            state={zones?.bottomCorner?.visible ? 'on' : 'off'}
+          />
+        </div>
+      </div>
 
-      <Ticker
-        data={data?.ticker}
-        state={zones?.ticker?.visible ? 'on' : 'off'}
-      />
+      {/* Ticker - 60px */}
+      <div style={{ flexShrink: 0, height: '60px' }}>
+        <Ticker
+          data={data?.ticker}
+          state={zones?.ticker?.visible ? 'on' : 'off'}
+        />
+      </div>
     </div>
   );
 }

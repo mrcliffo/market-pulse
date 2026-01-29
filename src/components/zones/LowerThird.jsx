@@ -10,6 +10,7 @@ export function LowerThird({
   content,
   data,
   state = 'on',
+  portrait = false,
 }) {
   const { colors } = useTheme();
 
@@ -33,14 +34,15 @@ export function LowerThird({
   return (
     <div
       style={{
-        gridArea: 'lowerthird',
-        padding: '16px',
+        gridArea: portrait ? undefined : 'lowerthird',
+        padding: portrait ? '0' : '16px',
         display: 'flex',
         flexDirection: 'column',
+        height: '100%',
         ...animationStyles[state],
       }}
     >
-      {data && <EditorialCard market={data} />}
+      {data && <EditorialCard market={data} portrait={portrait} />}
     </div>
   );
 }

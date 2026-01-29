@@ -101,4 +101,67 @@ export function BottomCorner({
   );
 }
 
+/**
+ * Portrait-specific QR component
+ * Larger QR with centered layout and prominent CTA
+ */
+export function BottomCornerPortrait({
+  voteUrl,
+  state = 'on',
+}) {
+  const { colors, fonts } = useTheme();
+
+  if (state === 'off') return null;
+
+  return (
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+      }}
+    >
+      {/* QR Code in white box */}
+      {voteUrl && (
+        <div style={{
+          padding: '16px',
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <QRCode url={voteUrl} size={140} />
+          <div style={{
+            fontFamily: fonts.heading,
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#333333',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+          }}>
+            VOTE NOW
+          </div>
+        </div>
+      )}
+
+      {/* Large CTA text */}
+      <div style={{
+        fontFamily: fonts.heading,
+        fontSize: '28px',
+        fontWeight: 700,
+        color: colors.accent,
+        letterSpacing: '3px',
+        textTransform: 'uppercase',
+      }}>
+        VOTE NOW
+      </div>
+    </div>
+  );
+}
+
 export default BottomCorner;

@@ -168,8 +168,11 @@ export function FeaturedMarket({
   // Trending mode: show top markets from playlist
   if (!event && trending?.length > 0) {
     const leader = currentLeader;
-    // For portrait, show items #2-#8 (7 items). For landscape, show items #2-#7 (6 items)
-    const alsoTrending = trending.slice(1, portrait ? 9 : 7);
+    // Show OTHER items (not the current featured one) in "Also Trending"
+    // Filter out the current leader and take 7 items for portrait, 6 for landscape
+    const alsoTrending = trending
+      .filter((_, idx) => idx !== rotationIndex)
+      .slice(0, portrait ? 7 : 6);
 
     return (
       <div style={{

@@ -119,7 +119,7 @@ function AnimatedStatBar({ currentValue, previousValue, variant = 'default', sho
   );
 }
 
-export function EditorialCard({ market }) {
+export function EditorialCard({ market, portrait = false }) {
   const { colors, fonts } = useTheme();
   const [animationKey, setAnimationKey] = useState(0);
 
@@ -201,6 +201,131 @@ export function EditorialCard({ market }) {
     return '';
   };
 
+  // Portrait layout - single column, more vertical
+  if (portrait) {
+    return (
+      <div style={{
+        position: 'relative',
+        height: '100%',
+        background: `linear-gradient(135deg, ${colors.surface} 0%, rgba(30, 30, 45, 1) 100%)`,
+        borderRadius: '12px',
+        padding: '20px 24px',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+        {/* Animated gradient border */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '12px',
+          padding: '2px',
+          background: `linear-gradient(90deg, ${colors.secondary}, ${colors.primary}, ${colors.secondary})`,
+          backgroundSize: '200% 100%',
+          animation: 'border-shift 4s ease infinite',
+          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+          WebkitMaskComposite: 'xor',
+          maskComposite: 'exclude',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Theme label */}
+        <div style={{
+          fontFamily: fonts.heading,
+          fontSize: '14px',
+          fontWeight: 600,
+          letterSpacing: '2px',
+          color: labelColor,
+          marginBottom: '8px',
+          textTransform: 'uppercase',
+        }}>
+          {labelText}
+        </div>
+
+        {/* Market title */}
+        <div style={{
+          fontFamily: fonts.heading,
+          fontSize: '22px',
+          fontWeight: 600,
+          color: colors.text,
+          marginBottom: '16px',
+          lineHeight: 1.2,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}>
+          {getMarketTitle()}
+        </div>
+
+        {/* Stats */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          marginBottom: '12px',
+        }}>
+          <div style={{
+            fontFamily: fonts.heading,
+            fontSize: '28px',
+            fontWeight: 600,
+            color: colors.positive,
+          }}>
+            YES {formatPrice(price)}
+          </div>
+          <div style={{
+            fontFamily: fonts.body,
+            fontSize: '18px',
+            color: colors.textMuted,
+          }}>
+            NO {formatPrice(1 - price)}
+          </div>
+        </div>
+
+        {/* Split bar for YES/NO */}
+        <div style={{
+          height: '12px',
+          backgroundColor: colors.negative,
+          borderRadius: '6px',
+          marginBottom: '16px',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${price * 100}%`,
+            background: colors.positive,
+            borderRadius: '6px 0 0 6px',
+          }} />
+        </div>
+
+        {/* Editorial copy */}
+        <div style={{
+          fontFamily: fonts.body,
+          fontSize: '16px',
+          color: colors.text,
+          lineHeight: 1.4,
+          fontStyle: 'italic',
+          flex: 1,
+        }}>
+          "{market.editorialCopy || 'The market is moving.'}"
+        </div>
+
+        {/* CSS animation for border */}
+        <style>{`
+          @keyframes border-shift {
+            0%, 100% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Landscape layout - two columns
   return (
     <div style={{
       position: 'relative',
